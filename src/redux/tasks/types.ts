@@ -16,4 +16,15 @@ export type TaskItem = {
 export interface TasksSliceState {
   tasks: TaskItem[]
   tasksStatus: Status
+  selectTask: TaskItem
+}
+
+export type UploadTaskParams = {
+  title: string
+  description: string
+}
+
+export type DoneTaskParams = {
+  id: string
+  done: boolean
 }

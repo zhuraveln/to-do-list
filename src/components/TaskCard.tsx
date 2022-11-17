@@ -2,13 +2,26 @@ import React from 'react'
 import { Button, Card, CardContent, Checkbox, Typography } from '@mui/material'
 import DeleteIcon from '@mui/icons-material/Delete'
 import { TaskItem } from '../redux/tasks/types'
-import TasksAPI from '../API/TasksAPI'
+import { deleteTask, doneTask, updateTask } from '../redux/tasks/asyncActions'
+import { useAppDispatch } from '../redux/store'
+import { onChangeTask } from '../redux/tasks/slice'
 
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } }
 
-const TaskCard: React.FC<TaskItem> = ({ id, title, description }) => {
-  const deleteTask = () => {
-    TasksAPI.deleteTask(id)
+const TaskCard: React.FC<TaskItem> = props => {
+  const { id, title, description, done } = props
+  const dispatch = useAppDispatch()
+
+  const onClickDone = () => {
+    dispatch(doneTask({ id, done }))
+  }
+
+  const onClickChange = () => {
+    dispatch(onChangeTask({ ...props }))
+  }
+
+  const onClickDelete = () => {
+    dispatch(deleteTask(id))
   }
 
   return (
@@ -23,15 +36,21 @@ const TaskCard: React.FC<TaskItem> = ({ id, title, description }) => {
         <Typography variant='body1'>{description}</Typography>
       </CardContent>
 
-      <Checkbox {...label} defaultChecked />
+      <Checkbox
+        {...label}
+        onClick={onClickDone}
+        checked={done ? true : false}
+      />
       <Button
-        onClick={deleteTask}
+        onClick={onClickDelete}
         variant='outlined'
         startIcon={<DeleteIcon />}
       >
         Delete
       </Button>
-      <Button variant='contained'>Изменить</Button>
+      <Button onClick={onClickChange} variant='contained'>
+        Изменить
+      </Button>
     </Card>
   )
 }

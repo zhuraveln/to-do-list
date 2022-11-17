@@ -6,15 +6,27 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { useAppDispatch } from '../redux/store'
-import TasksAPI from '../API/TasksAPI'
+import { uploadTask } from '../redux/tasks/asyncActions'
+import { TaskItem } from '../redux/tasks/types'
 
-const FormTask: React.FC = () => {
+type FormForTask = {
+  id?: string
+  title?: string
+  description?: string
+  targetDate?: string
+  filesURL?: string
+  done?: boolean
+}
+
+interface ITaskFields {
+  title: string
+  description: string
+}
+
+const FormTask: React.FC<FormForTask> = props => {
+  const { id, title, description, done } = props
+
   const dispatch = useAppDispatch()
-
-  interface ITaskFields {
-    title: string
-    description: string
-  }
 
   const {
     register,
@@ -30,13 +42,13 @@ const FormTask: React.FC = () => {
   })
 
   const onSubmit: SubmitHandler<ITaskFields> = data => {
-    TasksAPI.uploadTask(data)
+    dispatch(uploadTask(data))
     reset()
   }
 
   // Dayjs
   const [date, setDate] = React.useState<Dayjs | null>(
-    dayjs('2014-08-18T21:11:54')
+    dayjs('2022-10-18T21:11:54')
   )
   const handleChange = (newValue: Dayjs | null) => {
     setDate(newValue)
@@ -47,6 +59,7 @@ const FormTask: React.FC = () => {
       <TextField
         id='outlined-required'
         label='Название задачи'
+        defaultValue={title ? title : ''}
         {...register('title', {
           required: 'Это обязательное поле!',
           minLength: {
@@ -64,6 +77,7 @@ const FormTask: React.FC = () => {
       <TextField
         id='outlined-required'
         label='Описание'
+        defaultValue={description ? description : ''}
         {...register('description', {
           required: 'Это обязательное поле!',
           minLength: {

@@ -4,13 +4,15 @@ import {
   doc,
   addDoc,
   getDocs,
+  getDoc,
   updateDoc,
   deleteDoc
 } from 'firebase/firestore'
+import { DoneTaskParams, UploadTaskParams } from '../redux/tasks/types'
 
 export default class TasksAPI {
   // Get All Tasks from firebase
-  static async getAllTasks() {
+  static async fetchGetAllTasks() {
     const tasksCollectionRef = collection(db, 'tasks')
 
     const response = await getDocs(tasksCollectionRef)
@@ -21,21 +23,35 @@ export default class TasksAPI {
   }
 
   // Upload task to firebase
-  static async uploadTask(data: any) {
+  static async fetchUploadTask(data: UploadTaskParams) {
     const tasksCollectionRef = collection(db, 'tasks')
 
-    await addDoc(tasksCollectionRef, data)
+    const response = await addDoc(tasksCollectionRef, { ...data, done: false })
+    const newTaskDoc = doc(db, 'tasks', response.id)
+    const newTask = await getDoc(newTaskDoc)
+
+    return { ...newTask.data(), id: newTask.id }
+  }
+
+  // Set done Task
+  static async fetchDoneTask(newData: DoneTaskParams) {
+    const { id, done } = newData
+    const taskDoc = doc(db, 'tasks', id)
+
+    await updateDoc(taskDoc, { done: !done })
+
+    return id
   }
 
   // Update task in firebase
-  static async updateTask(newData: any) {
+  static async fetchUpdateTask(newData: any) {
     const taskDoc = doc(db, 'tasks', 'id')
 
     await updateDoc(taskDoc, newData)
   }
 
   // Delete task in firebase
-  static async deleteTask(id: string) {
+  static async fetchDeleteTask(id: string) {
     const taskDoc = doc(db, 'tasks', id)
 
     await deleteDoc(taskDoc)
