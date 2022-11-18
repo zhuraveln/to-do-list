@@ -1,6 +1,7 @@
 import React from 'react'
 import { Button, TextField } from '@mui/material'
 import dayjs, { Dayjs } from 'dayjs'
+import 'dayjs/locale/ru'
 import { SubmitHandler, useForm } from 'react-hook-form'
 
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
@@ -30,7 +31,8 @@ interface ITaskFields {
 }
 
 const FormTask: React.FC<PropsFormForTask> = props => {
-  const { id, title, description, done, modalOpen, closeModal } = props
+  const { id, title, description, done, targetDate, modalOpen, closeModal } =
+    props
 
   const dispatch = useAppDispatch()
 
@@ -42,27 +44,39 @@ const FormTask: React.FC<PropsFormForTask> = props => {
   } = useForm<ITaskFields>({
     mode: 'onChange',
     defaultValues: {
-      // title: 'Nikita',
-      // description: '12345'
+      title: 'Nikita',
+      description: '12345'
     }
   })
 
   const onSubmit: SubmitHandler<ITaskFields> = async data => {
     if (modalOpen) {
-      await dispatch(updateTask({ ...data, id } as TaskItem))
+      await dispatch(
+        updateTask({
+          ...data,
+          id,
+          targetDate: date?.format('DD/MM/YYYY H:mm') || null
+        } as TaskItem)
+      )
       dispatch(getAllTasks())
       closeModal()
     } else {
-      dispatch(uploadTask(data))
+      dispatch(
+        uploadTask({
+          ...data,
+          targetDate: date?.format('DD/MM/YYYY H:mm') || null
+        })
+      )
       reset()
     }
   }
 
-  // Dayjs
+  // Dayjs .format('DD/MM/YYYY H:m')
   const [date, setDate] = React.useState<Dayjs | null>(
-    dayjs('2022-10-18T21:11:54')
+    modalOpen ? dayjs(targetDate, 'DD/MM/YYYY H:mm') : null
+    // dayjs(targetDate) || dayjs('2022/11/18 21:11')
   )
-  const handleChange = (newValue: Dayjs | null) => {
+  const handleChangeDate = (newValue: Dayjs | null) => {
     setDate(newValue)
   }
 
@@ -70,7 +84,7 @@ const FormTask: React.FC<PropsFormForTask> = props => {
     <form onSubmit={handleSubmit(onSubmit)}>
       <TextField
         id='outlined-required'
-        label='Название задачи'
+        label='Заголовок'
         defaultValue={title ? title : ''}
         {...register('title', {
           required: 'Это обязательное поле!',
@@ -107,14 +121,14 @@ const FormTask: React.FC<PropsFormForTask> = props => {
         Прикрепить файл
         <input hidden accept='image/*' multiple type='file' />
       </Button> */}
-      {/* <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'ru'}>
         <DateTimePicker
-          label='Date&Time picker'
+          label='Дата завершения'
           value={date}
-          onChange={handleChange}
+          onChange={handleChangeDate}
           renderInput={params => <TextField {...params} />}
         />
-      </LocalizationProvider> */}
+      </LocalizationProvider>
       <Button type='submit' variant='contained' size='large'>
         Готово
       </Button>

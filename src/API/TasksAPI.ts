@@ -50,10 +50,15 @@ export default class TasksAPI {
 
   // Update task in firebase
   static async fetchUpdateTask(newData: TaskItem) {
-    const { id, title, description } = newData
+    const { id, title, description, targetDate } = newData
 
     const taskDoc = doc(db, 'tasks', id)
-    await updateDoc(taskDoc, { title: title, description: description })
+
+    await updateDoc(taskDoc, {
+      title: title,
+      description: description,
+      targetDate: targetDate
+    })
   }
 
   // Delete task in firebase

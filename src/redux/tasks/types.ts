@@ -22,6 +22,7 @@ export interface TasksSliceState {
 export type UploadTaskParams = {
   title: string
   description: string
+  targetDate: string | null
 }
 
 export type DoneTaskParams = {
