@@ -35,10 +35,8 @@ export const doneTask = createAsyncThunk(
 // Update Task
 export const updateTask = createAsyncThunk(
   'tasks/updateTaskStatus',
-  async (newData: any) => {
-    const data = await TasksAPI.fetchUpdateTask(newData)
-
-    return data
+  async (newData: TaskItem) => {
+    await TasksAPI.fetchUpdateTask(newData)
   }
 )
 

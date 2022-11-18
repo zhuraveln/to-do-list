@@ -4,7 +4,7 @@ import DeleteIcon from '@mui/icons-material/Delete'
 import { TaskItem } from '../redux/tasks/types'
 import { deleteTask, doneTask, updateTask } from '../redux/tasks/asyncActions'
 import { useAppDispatch } from '../redux/store'
-import { onChangeTask } from '../redux/tasks/slice'
+import { setSelectTask } from '../redux/tasks/slice'
 
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } }
 
@@ -17,7 +17,7 @@ const TaskCard: React.FC<TaskItem> = props => {
   }
 
   const onClickChange = () => {
-    dispatch(onChangeTask({ ...props }))
+    dispatch(setSelectTask({ ...props }))
   }
 
   const onClickDelete = () => {

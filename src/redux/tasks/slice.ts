@@ -19,7 +19,7 @@ export const tasksSlice = createSlice({
   name: 'tasks',
   initialState,
   reducers: {
-    onChangeTask(state, action) {
+    setSelectTask(state, action) {
       state.selectTask = action.payload
     },
     clearSelectTask(state) {
@@ -93,6 +93,6 @@ export const tasksSlice = createSlice({
   }
 })
 
-export const { onChangeTask, clearSelectTask } = tasksSlice.actions
+export const { setSelectTask, clearSelectTask } = tasksSlice.actions
 
 export default tasksSlice.reducer

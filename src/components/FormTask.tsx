@@ -6,16 +6,22 @@ import { SubmitHandler, useForm } from 'react-hook-form'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import { useAppDispatch } from '../redux/store'
-import { uploadTask } from '../redux/tasks/asyncActions'
+import {
+  getAllTasks,
+  updateTask,
+  uploadTask
+} from '../redux/tasks/asyncActions'
 import { TaskItem } from '../redux/tasks/types'
 
-type FormForTask = {
+type PropsFormForTask = {
   id?: string
   title?: string
   description?: string
   targetDate?: string
   filesURL?: string
   done?: boolean
+  modalOpen?: boolean
+  closeModal?: any
 }
 
 interface ITaskFields {
@@ -23,8 +29,8 @@ interface ITaskFields {
   description: string
 }
 
-const FormTask: React.FC<FormForTask> = props => {
-  const { id, title, description, done } = props
+const FormTask: React.FC<PropsFormForTask> = props => {
+  const { id, title, description, done, modalOpen, closeModal } = props
 
   const dispatch = useAppDispatch()
 
@@ -41,9 +47,15 @@ const FormTask: React.FC<FormForTask> = props => {
     }
   })
 
-  const onSubmit: SubmitHandler<ITaskFields> = data => {
-    dispatch(uploadTask(data))
-    reset()
+  const onSubmit: SubmitHandler<ITaskFields> = async data => {
+    if (modalOpen) {
+      await dispatch(updateTask({ ...data, id } as TaskItem))
+      dispatch(getAllTasks())
+      closeModal()
+    } else {
+      dispatch(uploadTask(data))
+      reset()
+    }
   }
 
   // Dayjs

@@ -8,7 +8,11 @@ import {
   updateDoc,
   deleteDoc
 } from 'firebase/firestore'
-import { DoneTaskParams, UploadTaskParams } from '../redux/tasks/types'
+import {
+  DoneTaskParams,
+  TaskItem,
+  UploadTaskParams
+} from '../redux/tasks/types'
 
 export default class TasksAPI {
   // Get All Tasks from firebase
@@ -27,6 +31,7 @@ export default class TasksAPI {
     const tasksCollectionRef = collection(db, 'tasks')
 
     const response = await addDoc(tasksCollectionRef, { ...data, done: false })
+
     const newTaskDoc = doc(db, 'tasks', response.id)
     const newTask = await getDoc(newTaskDoc)
 
@@ -44,10 +49,11 @@ export default class TasksAPI {
   }
 
   // Update task in firebase
-  static async fetchUpdateTask(newData: any) {
-    const taskDoc = doc(db, 'tasks', 'id')
+  static async fetchUpdateTask(newData: TaskItem) {
+    const { id, title, description } = newData
 
-    await updateDoc(taskDoc, newData)
+    const taskDoc = doc(db, 'tasks', id)
+    await updateDoc(taskDoc, { title: title, description: description })
   }
 
   // Delete task in firebase

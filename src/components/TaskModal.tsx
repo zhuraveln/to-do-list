@@ -82,7 +82,7 @@ const Modal: React.FC<TaskItem> = props => {
         aria-labelledby='customized-dialog-title'
         open={open}
       >
-        <FormTask {...props} />
+        <FormTask {...props} modalOpen={open} closeModal={handleClose} />
 
         {/* <BootstrapDialogTitle
           id='customized-dialog-title'
