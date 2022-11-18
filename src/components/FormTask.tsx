@@ -36,8 +36,8 @@ const FormTask: React.FC<FormForTask> = props => {
   } = useForm<ITaskFields>({
     mode: 'onChange',
     defaultValues: {
-      title: 'Nikita',
-      description: '12345'
+      // title: 'Nikita',
+      // description: '12345'
     }
   })
 

@@ -10,6 +10,8 @@ import CloseIcon from '@mui/icons-material/Close'
 import Typography from '@mui/material/Typography'
 import { TaskItem } from '../redux/tasks/types'
 import FormTask from './FormTask'
+import { useAppDispatch } from '../redux/store'
+import { clearSelectTask } from '../redux/tasks/slice'
 
 const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialogContent-root': {
@@ -53,12 +55,16 @@ function BootstrapDialogTitle(props: DialogTitleProps) {
 const Modal: React.FC<TaskItem> = props => {
   const { id, title, description, done } = props
 
+  const dispatch = useAppDispatch()
+
   const isMounted = useRef(false)
 
   const [open, setOpen] = React.useState(false)
 
   const handleClose = () => {
     setOpen(false)
+    dispatch(clearSelectTask())
+    isMounted.current = false
   }
 
   useEffect(() => {

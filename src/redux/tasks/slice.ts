@@ -21,6 +21,9 @@ export const tasksSlice = createSlice({
   reducers: {
     onChangeTask(state, action) {
       state.selectTask = action.payload
+    },
+    clearSelectTask(state) {
+      state.selectTask = {} as TaskItem
     }
   },
   extraReducers: builder => {
@@ -90,6 +93,6 @@ export const tasksSlice = createSlice({
   }
 })
 
-export const { onChangeTask } = tasksSlice.actions
+export const { onChangeTask, clearSelectTask } = tasksSlice.actions
 
 export default tasksSlice.reducer
