@@ -30,8 +30,8 @@ const FormTask: React.FC<PropsFormForTask> = props => {
   } = useForm<ITaskFields>({
     mode: 'onChange',
     defaultValues: {
-      // title: 'Nikita',
-      // description: '12345'
+      title: 'Nikita',
+      description: '12345'
     }
   })
 
@@ -95,7 +95,7 @@ const FormTask: React.FC<PropsFormForTask> = props => {
           })}
         />
         {errors?.title && (
-          <Typography variant='caption' color='text.secondary'>
+          <Typography variant='caption' color='#ff7b7b'>
             {errors.title.message}
           </Typography>
         )}
@@ -117,7 +117,7 @@ const FormTask: React.FC<PropsFormForTask> = props => {
           })}
         />
         {errors?.description && (
-          <Typography variant='caption' color='text.secondary'>
+          <Typography variant='caption' color='#ff7b7b'>
             {errors.description.message}
           </Typography>
         )}
