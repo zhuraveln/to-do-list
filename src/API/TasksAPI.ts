@@ -1,4 +1,4 @@
-import { db } from './firebase-config'
+import { db, storage } from './firebase-config'
 import {
   collection,
   doc,
@@ -8,11 +8,16 @@ import {
   updateDoc,
   deleteDoc
 } from 'firebase/firestore'
+
+import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
+
 import {
   DoneTaskParams,
   TaskItem,
   UploadTaskParams
 } from '../redux/tasks/types'
+
+import { v4 } from 'uuid'
 
 export default class TasksAPI {
   // Get All Tasks from firebase
@@ -28,14 +33,30 @@ export default class TasksAPI {
 
   // Upload task to firebase
   static async fetchUploadTask(data: UploadTaskParams) {
+    const { title, description, targetDate, file } = data
+    let fileURL = null
+
+    if (file) {
+      const imageRef = ref(storage, `images/${file.name + v4()}`)
+      const response = await uploadBytes(imageRef, file)
+
+      const upLoadedImageRef = ref(storage, response.metadata.fullPath)
+      const upLoadedFileURL = await getDownloadURL(upLoadedImageRef)
+      fileURL = upLoadedFileURL
+    }
+
     const tasksCollectionRef = collection(db, 'tasks')
-
-    const response = await addDoc(tasksCollectionRef, { ...data, done: false })
-
+    const response = await addDoc(tasksCollectionRef, {
+      title,
+      description,
+      targetDate,
+      done: false,
+      fileURL
+    })
     const newTaskDoc = doc(db, 'tasks', response.id)
     const newTask = await getDoc(newTaskDoc)
 
-    return { ...newTask.data(), id: newTask.id }
+    return { ...newTask.data(), id: newTask.id, fileURL: fileURL }
   }
 
   // Set done Task

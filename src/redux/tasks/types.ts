@@ -9,7 +9,7 @@ export type TaskItem = {
   title: string
   description: string
   targetDate: string
-  filesURL: string
+  fileURL: string
   done: boolean
 }
 
@@ -23,6 +23,7 @@ export type UploadTaskParams = {
   title: string
   description: string
   targetDate: string | null
+  file: File | null
 }
 
 export type DoneTaskParams = {

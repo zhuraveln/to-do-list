@@ -19,7 +19,7 @@ type PropsFormForTask = {
   title?: string
   description?: string
   targetDate?: string
-  filesURL?: string
+  fileURL?: string
   done?: boolean
   modalOpen?: boolean
   closeModal?: any
@@ -31,8 +31,7 @@ interface ITaskFields {
 }
 
 const FormTask: React.FC<PropsFormForTask> = props => {
-  const { id, title, description, done, targetDate, modalOpen, closeModal } =
-    props
+  const { id, title, description, targetDate, modalOpen, closeModal } = props
 
   const dispatch = useAppDispatch()
 
@@ -64,21 +63,29 @@ const FormTask: React.FC<PropsFormForTask> = props => {
       dispatch(
         uploadTask({
           ...data,
-          targetDate: date?.format('DD/MM/YYYY H:mm') || null
+          targetDate: date?.format('DD/MM/YYYY H:mm') || null,
+          file: fileUpload
         })
       )
       reset()
+      setFileUpload(null)
     }
   }
 
-  // Dayjs .format('DD/MM/YYYY H:m')
+  // Dayjs
   const [date, setDate] = React.useState<Dayjs | null>(
-    modalOpen ? dayjs(targetDate, 'DD/MM/YYYY H:mm') : null
-    // dayjs(targetDate) || dayjs('2022/11/18 21:11')
+    modalOpen
+      ? targetDate
+        ? dayjs(targetDate, 'DD/MM/YYYY H:mm')
+        : null
+      : null
   )
   const handleChangeDate = (newValue: Dayjs | null) => {
     setDate(newValue)
   }
+
+  // Files
+  const [fileUpload, setFileUpload] = React.useState<File | null>(null)
 
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
@@ -117,10 +124,6 @@ const FormTask: React.FC<PropsFormForTask> = props => {
         })}
       />
       {errors?.description && <p>{errors.description.message}</p>}
-      {/* <Button variant='contained' component='label'>
-        Прикрепить файл
-        <input hidden accept='image/*' multiple type='file' />
-      </Button> */}
       <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'ru'}>
         <DateTimePicker
           label='Дата завершения'
@@ -132,6 +135,23 @@ const FormTask: React.FC<PropsFormForTask> = props => {
       <Button type='submit' variant='contained' size='large'>
         Готово
       </Button>
+      <Button variant='contained' component='label'>
+        Прикрепить файл
+        <input
+          hidden
+          accept='image/*'
+          multiple
+          type='file'
+          onChange={e =>
+            setFileUpload(e.target.files ? e.target.files[0] : null)
+          }
+        />
+      </Button>
+      <div>
+        {fileUpload
+          ? `Файл для загрузки: ${fileUpload.name}`
+          : 'Нет прикрепленных файлов'}
+      </div>
     </form>
   )
 }

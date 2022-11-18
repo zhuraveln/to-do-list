@@ -9,7 +9,7 @@ import { setSelectTask } from '../redux/tasks/slice'
 const label = { inputProps: { 'aria-label': 'Checkbox demo' } }
 
 const TaskCard: React.FC<TaskItem> = props => {
-  const { id, title, description, done, targetDate } = props
+  const { id, title, description, done, targetDate, fileURL } = props
   const dispatch = useAppDispatch()
 
   const onClickDone = () => {
@@ -36,6 +36,11 @@ const TaskCard: React.FC<TaskItem> = props => {
             : 'Задача без сроков выполнения'}
         </Typography>
         <Typography variant='body1'>{description}</Typography>
+        {fileURL && (
+          <Typography variant='body1'>
+            <a href={fileURL}>Прикрепленный файл</a>
+          </Typography>
+        )}
       </CardContent>
 
       <Checkbox
