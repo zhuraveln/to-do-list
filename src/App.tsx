@@ -1,15 +1,17 @@
 import React from 'react'
 
 import NavBar from './components/NavBar'
-import FormForTask from './components/FormTask'
+import FormForTask from './components/FormTask/FormTask'
 import TasksList from './components/TasksList'
 
-import styles from './App.module.scss'
+import styles from './App.module.less'
 
 const App: React.FC = () => {
   return (
-    <div className={styles.root}>
-      <NavBar />
+    <>
+      <div className={styles.navBar}>
+        <NavBar />
+      </div>
       <div className={styles.wrapper}>
         <div className={styles.form}>
           <FormForTask />
@@ -18,7 +20,7 @@ const App: React.FC = () => {
           <TasksList />
         </div>
       </div>
-    </div>
+    </>
   )
 }
 

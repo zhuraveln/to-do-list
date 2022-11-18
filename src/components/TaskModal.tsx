@@ -1,19 +1,10 @@
 import React, { useEffect, useRef } from 'react'
-import { styled } from '@mui/material/styles'
 import Dialog from '@mui/material/Dialog'
 import { TaskItem } from '../redux/tasks/types'
-import FormTask from './FormTask'
+import FormTask from './FormTask/FormTask'
 import { useAppDispatch } from '../redux/store'
 import { clearSelectTask } from '../redux/tasks/slice'
-
-const BootstrapDialog = styled(Dialog)(({ theme }) => ({
-  '& .MuiDialogContent-root': {
-    padding: theme.spacing(10)
-  },
-  '& .MuiDialogActions-root': {
-    padding: theme.spacing(1)
-  }
-}))
+import { DialogContent, DialogTitle } from '@mui/material'
 
 export interface DialogTitleProps {
   id: string
@@ -21,7 +12,7 @@ export interface DialogTitleProps {
   onClose: () => void
 }
 
-const Modal: React.FC<TaskItem> = props => {
+const TaskModal: React.FC<TaskItem> = props => {
   const dispatch = useAppDispatch()
 
   const isMounted = useRef(false)
@@ -44,15 +35,14 @@ const Modal: React.FC<TaskItem> = props => {
 
   return (
     <div>
-      <BootstrapDialog
-        onClose={handleClose}
-        aria-labelledby='customized-dialog-title'
-        open={open}
-      >
-        <FormTask {...props} modalOpen={open} closeModal={handleClose} />
-      </BootstrapDialog>
+      <Dialog onClose={handleClose} open={open}>
+        <DialogTitle textAlign={'center'}>Изменить задачу</DialogTitle>
+        <DialogContent>
+          <FormTask {...props} modalOpen={open} closeModal={handleClose} />
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
 
-export default Modal
+export default TaskModal
