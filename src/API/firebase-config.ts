@@ -2,7 +2,7 @@ import { initializeApp } from 'firebase/app'
 import { getFirestore } from 'firebase/firestore'
 import { getStorage } from 'firebase/storage'
 
-// Config for Firebase
+/** Конфигурация для доступа к Firebase */
 const firebaseConfig = {
   apiKey: `${process.env.REACT_APP_FIREBASE_API_KEY}`,
   authDomain: 'to-do-list-1ff69.firebaseapp.com',
@@ -15,9 +15,11 @@ const firebaseConfig = {
   measurementId: 'G-DFLYE8SZND'
 }
 
-// Initialize Firebase
+/** Приложение Firebase */
 const app = initializeApp(firebaseConfig)
 
-// Initialize and export Firestore
+/** Firebase Firestore */
 export const db = getFirestore(app)
+
+/** Firebase Storage */
 export const storage = getStorage(app)

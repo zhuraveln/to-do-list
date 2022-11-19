@@ -2,6 +2,7 @@ import { configureStore } from '@reduxjs/toolkit'
 import tasks from './tasks/slice'
 import { useDispatch } from 'react-redux'
 
+/** Redux store */
 export const store = configureStore({
   reducer: {
     tasks

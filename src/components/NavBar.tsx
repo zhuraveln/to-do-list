@@ -1,6 +1,9 @@
 import React from 'react'
 import { AppBar, Box, Toolbar, Typography } from '@mui/material'
 
+/**
+ * React функциональный компонент "Навигационная панель"
+ */
 const NavBar: React.FC = () => {
   return (
     <Box sx={{ flexGrow: 1 }}>

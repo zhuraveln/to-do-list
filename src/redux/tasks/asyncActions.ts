@@ -2,7 +2,10 @@ import { createAsyncThunk } from '@reduxjs/toolkit'
 import TasksAPI from '../../API/TasksAPI'
 import { DoneTaskParams, TaskItem, UploadTaskParams } from './types'
 
-// Get All Tasks
+/**
+ * Асинхронный action для получения всех задач с помощью API
+ * @return {TaskItem[]} массив задач из коллекции
+ */
 export const getAllTasks = createAsyncThunk(
   'tasks/getAllTasksStatus',
   async () => {
@@ -12,7 +15,11 @@ export const getAllTasks = createAsyncThunk(
   }
 )
 
-// Upload Task
+/**
+ * Асинхронный action для загрузки новой задачи и прикрепленного файла с помощью API
+ * @param {UploadTaskParams} params данные для создания задачи
+ * @return {TaskItem} новая загруженная задача из коллекции
+ */
 export const uploadTask = createAsyncThunk(
   'tasks/uploadTaskStatus',
   async (params: UploadTaskParams) => {
@@ -22,17 +29,24 @@ export const uploadTask = createAsyncThunk(
   }
 )
 
-// Set done Task
+/**
+ * Асинхронный action для изменения состояния выполнения с помощью API
+ * @param {DoneTaskParams} newData данные изменения состояния задачи
+ * @return {strind} id измененной задачи
+ */
 export const doneTask = createAsyncThunk(
   'tasks/doneTaskStatus',
   async (newData: DoneTaskParams) => {
-    const data = await TasksAPI.fetchDoneTask(newData)
+    const id = await TasksAPI.fetchDoneTask(newData)
 
-    return data as string
+    return id as string
   }
 )
 
-// Update Task
+/**
+ * Асинхронный action для обновления полей задачи с помощью API
+ * @param {TaskItem} newData данные для обновления задачи
+ */
 export const updateTask = createAsyncThunk(
   'tasks/updateTaskStatus',
   async (newData: TaskItem) => {
@@ -40,7 +54,11 @@ export const updateTask = createAsyncThunk(
   }
 )
 
-// Delete Task
+/**
+ * Асинхронный action для удаления задачи с помощью API
+ * @param {DoneTaskParams} newData данные изменения состояния задачи
+ * @return {strind} id удаленной задачи
+ */
 export const deleteTask = createAsyncThunk(
   'tasks/deleteTaskStatus',
   async (id: string) => {

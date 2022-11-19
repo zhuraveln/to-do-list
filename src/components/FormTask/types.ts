@@ -1,3 +1,4 @@
+/** Типы props для FormTask */
 export type PropsFormForTask = {
   id?: string
   title?: string
@@ -9,6 +10,7 @@ export type PropsFormForTask = {
   closeModal?: any
 }
 
+/** Типы полей для useForm */
 export interface ITaskFields {
   title: string
   description: string

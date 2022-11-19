@@ -19,15 +19,17 @@ export const tasksSlice = createSlice({
   name: 'tasks',
   initialState,
   reducers: {
+    /** Устанавливает в selectTask выбранную задачу */
     setSelectTask(state, action) {
       state.selectTask = action.payload
     },
+    /** Отчищает selectTask */
     clearSelectTask(state) {
       state.selectTask = {} as TaskItem
     }
   },
   extraReducers: builder => {
-    // Get all tasks
+    /** Получение всех задач */
     builder.addCase(getAllTasks.pending, state => {
       state.tasksStatus = Status.LOADING
     })
@@ -39,7 +41,7 @@ export const tasksSlice = createSlice({
       state.tasksStatus = Status.ERROR
     })
 
-    // Upload task
+    /** Загрузка задачи */
     builder.addCase(uploadTask.pending, state => {
       state.tasksStatus = Status.LOADING
     })
@@ -51,7 +53,7 @@ export const tasksSlice = createSlice({
       state.tasksStatus = Status.ERROR
     })
 
-    // Done task
+    /** Изменения состояния выполнения задачи */
     builder.addCase(doneTask.pending, state => {
       state.tasksStatus = Status.LOADING
     })
@@ -68,7 +70,7 @@ export const tasksSlice = createSlice({
       state.tasksStatus = Status.ERROR
     })
 
-    // Update task
+    /** Обновление полей задачи */
     builder.addCase(updateTask.pending, state => {
       state.tasksStatus = Status.LOADING
     })
@@ -79,7 +81,7 @@ export const tasksSlice = createSlice({
       state.tasksStatus = Status.ERROR
     })
 
-    // Delete task
+    /** Удаление задачи */
     builder.addCase(deleteTask.pending, state => {
       state.tasksStatus = Status.LOADING
     })
