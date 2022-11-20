@@ -13,8 +13,8 @@ SPA by 💙 **React JS**
 - Redux toolkit
 - UI Kit MUI
 - LESS / CSS Modules
-- Utils – dayjs, uuid
+- Utils – dayjs, uuid, yup
 
 ## 🗃 Backend
 
-- Firebase Firestore, Storage
+- Firebase (Firestore, Storage)

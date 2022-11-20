@@ -15,10 +15,10 @@ const TasksList: React.FC = () => {
   /** Инициализация dispatch для работы с Redux */
   const dispatch = useAppDispatch()
 
-  /** Получение всех задач и выбранной из Redux */
+  /** Получение всех задач и выбранной задачи (по нажатию на кнопку "Изменить") из Redux */
   const { tasks, selectTask } = useSelector(tasksSelector)
 
-  /** При первом монтировании компонента отправлять запрос на Firebase */
+  /** При первом монтировании компонента отправлять запрос на Firebase для получения всех задач*/
   useEffect(() => {
     dispatch(getAllTasks())
   }, [])

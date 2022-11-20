@@ -21,7 +21,7 @@ import { TaskItem } from '../redux/tasks/types'
 
 /**
  * React функциональный компонент "Карточка задачи"
- * @params {props} в виде объекта типа TaskItem
+ * @params {props} объект типа TaskItem
  */
 const TaskCard: React.FC<TaskItem> = props => {
   /** Деструктуризация полученных данных из props */

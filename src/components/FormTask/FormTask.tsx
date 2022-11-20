@@ -1,12 +1,14 @@
 import React from 'react'
-import { SubmitHandler, useForm } from 'react-hook-form'
+import { SubmitHandler, useForm, Controller } from 'react-hook-form'
+import { yupResolver } from '@hookform/resolvers/yup'
 
 import dayjs, { Dayjs } from 'dayjs'
 import 'dayjs/locale/ru'
 
-import { Button, Stack, TextField, Typography } from '@mui/material'
+import { Button, Link, Stack, TextField, Typography } from '@mui/material'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers'
+import AttachFileIcon from '@mui/icons-material/AttachFile'
 
 import { useAppDispatch } from '../../redux/store'
 import {
@@ -15,165 +17,152 @@ import {
   uploadTask
 } from '../../redux/tasks/asyncActions'
 
-import { TaskItem } from '../../redux/tasks/types'
-import { ITaskFields, PropsFormForTask } from './types'
+import { UpdateTaskParams, UploadTaskParams } from '../../redux/tasks/types'
+import { createTaskSchema, ITaskFields, PropsFormForTask } from './types'
 
 /**
  * React функциональный компонент "Форма для создания/изменения задачи"
- * @params {props} в виде объекта типа PropsFormForTask
+ * @params {props} объект типа PropsFormForTask
  */
 const FormTask: React.FC<PropsFormForTask> = props => {
   /** Деструктуризация полученных данных из props */
-  const { id, title, description, targetDate, modalOpen, closeModal } = props
+  const { id, title, description, targetDate, fileURL, modalOpen, closeModal } =
+    props
 
   /** Инициализация dispatch для работы с Redux */
   const dispatch = useAppDispatch()
 
-  /** Инициализация хука useForm */
+  /** Состояние поля "Дата завершения" */
+  /** Установка состояния по умолчанию в зависимости от активности модального окна */
+  const [date, setDate] = React.useState<Dayjs | null>(
+    modalOpen // если модальное окно активно
+      ? targetDate // и у выбранной задачи имеется дата завершения
+        ? dayjs(targetDate, 'DD/MM/YYYY H:mm') // устанавливается дата завершения выбранной задачи
+        : null // поле чисто при отсутствии даты завершения у выбранной задачи
+      : null // поле чисто при неактивном модальном окне
+  )
+
+  /** Состояние прикрепленного файла */
+  const [fileUpload, setFileUpload] = React.useState<File | null>(null)
+
+  /** Инициализация хука useForm для работы с формой*/
   const {
-    register,
+    control,
     handleSubmit,
     formState: { errors },
     reset
   } = useForm<ITaskFields>({
-    mode: 'onChange'
+    mode: 'onChange',
+    resolver: yupResolver(createTaskSchema)
   })
 
-  /** Асинхронная функция для создания/обновления задачи */
+  /** Обработчик события "onSubmit" для формы создания/обновления задачи */
   const onSubmit: SubmitHandler<ITaskFields> = async data => {
-    /** Если модального окно открыто – обновление полей задачи */
+    /** При активном модальном окне – обновление полей выбранной задачи */
     if (modalOpen) {
       await dispatch(
         updateTask({
+          // обновление задачи
           ...data,
           id,
-          targetDate: date?.format('DD/MM/YYYY H:mm') || null
-        } as TaskItem)
+          targetDate: date?.format('DD/MM/YYYY H:mm') || null,
+          fileURL,
+          file: fileUpload
+        } as UpdateTaskParams)
       )
-      dispatch(getAllTasks())
-      closeModal()
+      dispatch(getAllTasks()) // получение всех задач после обновления полей задачи
+      closeModal() // закрытие модального окна
 
-      /** При закрытом модальном окне – загрузка новой задачи  */
+      /** При неактивном модальном окне – загрузка новой задачи  */
     } else {
       dispatch(
         uploadTask({
+          // загрузка новой задачи
           ...data,
           targetDate: date?.format('DD/MM/YYYY H:mm') || null,
           file: fileUpload
-        })
+        } as UploadTaskParams)
       )
-      reset()
-      setFileUpload(null)
-      setDate(null)
+      reset() // отчистка полей формы
+      setFileUpload(null) // отчистка состояния загружаемого файла
+      setDate(null) // отчистка состояния выб
     }
   }
 
-  /** Инициализация хука useState для работы датами */
-  /** Установка состояния по умолчанию в зависимости от состояния модального окна */
-  const [date, setDate] = React.useState<Dayjs | null>(
-    modalOpen
-      ? targetDate
-        ? dayjs(targetDate, 'DD/MM/YYYY H:mm')
-        : null
-      : null
-  )
-
-  /** Функция обработчик события при изменения полей в <DateTimePicker/> */
-  const handleChangeDate = (newValue: Dayjs | null) => {
-    setDate(newValue)
-  }
-
-  /** Инициализация хука useState для работы с прикрепленными файлами */
-  const [fileUpload, setFileUpload] = React.useState<File | null>(null)
-
   return (
-    /** Форма для создания/обновления задачи */
+    // Форма для создания/обновления задачи
     <form onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={1} mb={4}>
         {/* Поле с заголовком задачи */}
-        <TextField
-          id='outlined-required'
-          label='Заголовок'
+        <Controller
+          name='title'
+          control={control}
           defaultValue={title ? title : ''}
-          {...register('title', {
-            required: 'это обязательное поле!',
-            minLength: {
-              value: 3,
-              message: 'минимальное кол-во символов 3'
-            },
-            maxLength: {
-              value: 40,
-              message: 'максимальное кол-во символов 40'
-            }
-          })}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label='Заголовок'
+              error={!!errors.title}
+              helperText={errors.title ? errors.title.message : ''}
+            />
+          )}
         />
-        {errors?.title && (
-          <Typography variant='caption' color='#ff7b7b'>
-            {errors.title.message}
-          </Typography>
-        )}
 
         {/* Поле с описанием задачи */}
-        <TextField
-          id='outlined-required'
-          label='Описание'
+        <Controller
+          name='description'
+          control={control}
           defaultValue={description ? description : ''}
-          {...register('description', {
-            required: 'это обязательное поле!',
-            minLength: {
-              value: 3,
-              message: 'минимальное кол-во символов 3'
-            },
-            maxLength: {
-              value: 200,
-              message: 'максимальное кол-во символов 200'
-            }
-          })}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label='Описание'
+              error={!!errors.description}
+              helperText={errors.description ? errors.description.message : ''}
+            />
+          )}
         />
-        {errors?.description && (
-          <Typography variant='caption' color='#ff7b7b'>
-            {errors.description.message}
-          </Typography>
-        )}
 
         {/* Поле с выбором даты завершения задачи */}
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'ru'}>
           <DateTimePicker
             label='Дата завершения'
             value={date}
-            onChange={handleChangeDate}
+            onChange={e => setDate(e)}
             renderInput={params => <TextField {...params} />}
           />
         </LocalizationProvider>
 
-        {/* Кнопка прикрепления файла */}
-        {/* При открытом модальном окне кнопка не отображается */}
-        {!modalOpen && (
-          <>
-            <Button variant='contained' component='label'>
-              Прикрепить файл
-              <input
-                hidden
-                accept='image/*'
-                multiple
-                type='file'
-                onChange={e =>
-                  setFileUpload(e.target.files ? e.target.files[0] : null)
-                }
-              />
-            </Button>
-            <div>
-              {fileUpload ? (
-                <Typography sx={{ mb: 1.5 }} color='text.secondary'>
-                  <b>Файл для загрузки:</b> {fileUpload.name}
-                </Typography>
-              ) : (
-                <Typography sx={{ mb: 1.5 }} color='text.secondary'>
-                  Нет прикрепленного файла
-                </Typography>
-              )}
-            </div>
-          </>
+        {/* Кнопка для прикрепления файла */}
+        <Button variant='contained' component='label'>
+          Прикрепить файл
+          <input
+            hidden
+            multiple
+            type='file'
+            onChange={e =>
+              setFileUpload(e.target.files ? e.target.files[0] : null)
+            }
+          />
+        </Button>
+        {/* Информация о загружаемом файле */}
+        {fileUpload ? (
+          <Typography sx={{ mb: 1.5 }} color='text.secondary'>
+            <b>Файл для загрузки:</b> {fileUpload.name}
+          </Typography>
+        ) : fileURL ? (
+          <Stack direction='row' spacing={0.3}>
+            <AttachFileIcon />
+            <Typography variant='body1'>
+              <Link href={fileURL} target='_blank'>
+                <b>Прикрепленный файл</b>
+              </Link>
+            </Typography>
+          </Stack>
+        ) : (
+          <Typography sx={{ mb: 1.5 }} color='text.secondary'>
+            Нет прикрепленного файла
+          </Typography>
         )}
       </Stack>
 

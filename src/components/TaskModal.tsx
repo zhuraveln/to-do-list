@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react'
 
 import Dialog from '@mui/material/Dialog'
-import { DialogContent, DialogTitle } from '@mui/material'
+import { DialogContent, DialogContentText } from '@mui/material'
 
 import FormTask from './FormTask/FormTask'
 
@@ -11,7 +11,7 @@ import { clearSelectTask } from '../redux/tasks/slice'
 
 /**
  * React функциональный компонент "Модальное окно Задачи"
- * @params {props} в виде объекта типа TaskItem
+ * @params {props} объект типа TaskItem
  */
 const TaskModal: React.FC<TaskItem> = props => {
   /** Инициализация dispatch для работы с Redux */
@@ -44,9 +44,11 @@ const TaskModal: React.FC<TaskItem> = props => {
   return (
     /** Модальное окно */
     <div>
-      <Dialog onClose={handleClose} open={open}>
+      <Dialog onClose={handleClose} open={open} fullWidth maxWidth={'sm'}>
         {/* Заголовок модального окна */}
-        <DialogTitle textAlign={'center'}>Изменить задачу</DialogTitle>
+        <DialogContentText textAlign={'center'} variant='h4' paddingTop={2}>
+          Изменить задачу
+        </DialogContentText>
 
         {/* Контент отображающийся внутри модального окна */}
         <DialogContent>

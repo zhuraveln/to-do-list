@@ -21,27 +21,29 @@ body {
   width: 80%;
   margin: auto;
 
-  @media (max-width: 900px) {
-    flex-direction: column;
-    width: 95%;
-  }
-
   .form {
     display: flex;
     flex-direction: column;
     width: 35%;
     margin-right: 15px;
-
-    @media (max-width: 900px) {
-      width: 100%;
-      margin-bottom: 35px;
-    }
   }
 
   .tasks {
     width: 65%;
+  }
+}
 
-    @media (max-width: 900px) {
+@media (max-width: 900px) {
+  .wrapper {
+    flex-direction: column;
+    width: 95%;
+
+    .form {
+      width: 100%;
+      margin-bottom: 35px;
+    }
+
+    .tasks {
       width: 100%;
     }
   }

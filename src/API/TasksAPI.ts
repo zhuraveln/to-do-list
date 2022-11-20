@@ -1,4 +1,4 @@
-import { db, storage } from './firebase-config'
+import { db } from './_firebase-config'
 import {
   collection,
   doc,
@@ -8,17 +8,16 @@ import {
   updateDoc,
   deleteDoc
 } from 'firebase/firestore'
-import { getDownloadURL, ref, uploadBytes } from 'firebase/storage'
-import { v4 } from 'uuid'
 
 import {
   DoneTaskParams,
-  TaskItem,
+  UpdateTaskParams,
   UploadTaskParams
 } from '../redux/tasks/types'
+import FileAPI from './FileAPI'
 
 /**
- * Класс с методами для взаимодейтсвия с Firestore и Storage (Firebase)
+ * Класс с методами для взаимодействия с Firestore (Firebase)
  */
 export default class TasksAPI {
   /**
@@ -39,34 +38,13 @@ export default class TasksAPI {
   }
 
   /**
-   * Метод для загрузки новой задачи и прикрепленного файла в коллекцию Firestore и хранилище Storage
+   * Метод для загрузки новой задачи в коллекцию Firestore
    * @param {UploadTaskParams} data данные для создания задачи
    * @return {TaskItem} новая загруженная задача из коллекции
    */
   static async fetchUploadTask(data: UploadTaskParams) {
     /** Деструктуризация полученных данных из параметра */
-    const { title, description, targetDate, file } = data
-
-    /** Создание переменной для загруженного файла в Storage */
-    let fileURL = null
-
-    /** Загрузка файла в Storage если пользователь его указал */
-    if (file) {
-      /** Создание ссылки на папку 'images' в Storage*/
-      const imageRef = ref(storage, `images/${file.name + v4()}`)
-
-      /** Отправка файла по заданной ссылке */
-      const response = await uploadBytes(imageRef, file)
-
-      /** Создание ссылки в Storage для загруженного файла */
-      const upLoadedImageRef = ref(storage, response.metadata.fullPath)
-
-      /** Получение URL на загруженный файл */
-      const upLoadedFileURL = await getDownloadURL(upLoadedImageRef)
-
-      /** Присвоение полученного URL переменной fileURL*/
-      fileURL = upLoadedFileURL
-    }
+    const { title, description, targetDate } = data
 
     /** Создание ссылки на коллекцию 'tasks' */
     const tasksCollectionRef = collection(db, 'tasks')
@@ -76,8 +54,7 @@ export default class TasksAPI {
       title,
       description,
       targetDate,
-      done: false,
-      fileURL
+      done: false
     })
 
     /** Создание ссылки на созданную задачу в коллекции 'tasks' */
@@ -86,11 +63,52 @@ export default class TasksAPI {
     /** Получение задачи по заданной ссылке */
     const newTask = await getDoc(newTaskDoc)
 
-    return { ...newTask.data(), id: newTask.id, fileURL: fileURL }
+    return { ...newTask.data(), id: newTask.id }
   }
 
   /**
-   * Метод изменения состояния поля 'done' в задачи из коллекции Firestore
+   * Метод для обновления полей задачи из коллекции Firestore
+   * @param {TaskItem} newData данные для изменения полей задачи
+   */
+  static async fetchUpdateTask(newData: UpdateTaskParams) {
+    /** Деструктуризация полученных данных из параметра */
+    const { id, title, description, targetDate, fileURL, file } = newData
+
+    // Если новый файл не выбран – ссылка остается прежней
+    let upLoadedFileURL = fileURL
+
+    /** Если новый файлы выбран – загрузка нового прикрепленного файла в хранилище Storage */
+    if (file) {
+      const newFileURL = await FileAPI.fetchUploadFile({ file })
+      upLoadedFileURL = newFileURL
+    }
+
+    /** Создание ссылки на задачу в коллекции 'tasks' по id */
+    const taskDoc = doc(db, 'tasks', id)
+
+    /** Обновление полей задачи по ссылки */
+    await updateDoc(taskDoc, {
+      title: title,
+      description: description,
+      targetDate: targetDate,
+      fileURL: upLoadedFileURL
+    })
+  }
+
+  /**
+   * Метод для удаления задачи из коллекции Firestore
+   * @param {string} id задачи, которую необходимо удалить
+   */
+  static async fetchDeleteTask(id: string) {
+    /** Создание ссылки на задачу в коллекции 'tasks' по id */
+    const taskDoc = doc(db, 'tasks', id)
+
+    /** Удаление задачи из коллекции по заданной ссылки */
+    await deleteDoc(taskDoc)
+  }
+
+  /**
+   * Метод для изменения состояния поля 'done' в задачи из коллекции Firestore
    * @param {DoneTaskParams} newData данные для изменения состояния выполения задачи
    * @return {string} id измененной задачи
    */
@@ -105,36 +123,5 @@ export default class TasksAPI {
     await updateDoc(taskDoc, { done: !done })
 
     return id
-  }
-
-  /**
-   * Метод обновления полей задачи из коллекции Firestore
-   * @param {TaskItem} newData данные для изменения полей задачи
-   */
-  static async fetchUpdateTask(newData: TaskItem) {
-    /** Деструктуризация полученных данных из параметра */
-    const { id, title, description, targetDate } = newData
-
-    /** Создание ссылки на задачу в коллекции 'tasks' по id */
-    const taskDoc = doc(db, 'tasks', id)
-
-    /** Обновление полей задачи по ссылки */
-    await updateDoc(taskDoc, {
-      title: title,
-      description: description,
-      targetDate: targetDate
-    })
-  }
-
-  /**
-   * Метод для удаления задачи из коллекции Firestore
-   * @param {string} id задачи, которую необходимо удалить
-   */
-  static async fetchDeleteTask(id: string) {
-    /** Создание ссылки на задачу в коллекции 'tasks' по id */
-    const taskDoc = doc(db, 'tasks', id)
-
-    /** Удаление задачи из коллекции по заданной ссылки */
-    await deleteDoc(taskDoc)
   }
 }
