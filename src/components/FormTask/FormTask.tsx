@@ -6,6 +6,7 @@ import dayjs, { Dayjs } from 'dayjs'
 import 'dayjs/locale/ru'
 
 import { Button, Link, Stack, TextField, Typography } from '@mui/material'
+import LoadingButton from '@mui/lab/LoadingButton'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
@@ -17,8 +18,14 @@ import {
   uploadTask
 } from '../../redux/tasks/asyncActions'
 
-import { UpdateTaskParams, UploadTaskParams } from '../../redux/tasks/types'
+import {
+  Status,
+  UpdateTaskParams,
+  UploadTaskParams
+} from '../../redux/tasks/types'
 import { createTaskSchema, ITaskFields, PropsFormForTask } from './types'
+import { useSelector } from 'react-redux'
+import { tasksSelector } from '../../redux/tasks/selectors'
 
 /**
  * React функциональный компонент "Форма для создания/изменения задачи"
@@ -28,6 +35,9 @@ const FormTask: React.FC<PropsFormForTask> = props => {
   /** Деструктуризация полученных данных из props */
   const { id, title, description, targetDate, fileURL, modalOpen, closeModal } =
     props
+
+  /** Получение статуса задачи из Redux */
+  const { tasksStatus } = useSelector(tasksSelector)
 
   /** Инициализация dispatch для работы с Redux */
   const dispatch = useAppDispatch()
@@ -168,9 +178,14 @@ const FormTask: React.FC<PropsFormForTask> = props => {
 
       {/* Кнопка для загрузки/обновления задачи */}
       <Stack>
-        <Button type='submit' variant='contained' size='large'>
+        <LoadingButton
+          type='submit'
+          variant='contained'
+          size='large'
+          loading={tasksStatus === Status.LOADING}
+        >
           Готово
-        </Button>
+        </LoadingButton>
       </Stack>
     </form>
   )
