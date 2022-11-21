@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 
 import Dialog from '@mui/material/Dialog'
 import { DialogContent, DialogContentText } from '@mui/material'
@@ -22,7 +22,7 @@ const TaskModal: React.FC<TaskItem> = props => {
   const isMounted = useRef(false)
 
   /** Инициализация хука useState для отслеживания состояния модального окна */
-  const [open, setOpen] = React.useState(false)
+  const [open, setOpen] = useState(false)
 
   /** Функция обработчик события клика на зону вне модального окна для его закрытия */
   const handleClose = () => {

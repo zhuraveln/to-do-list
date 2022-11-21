@@ -1,17 +1,27 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { SubmitHandler, useForm, Controller } from 'react-hook-form'
 import { yupResolver } from '@hookform/resolvers/yup'
 
 import dayjs, { Dayjs } from 'dayjs'
 import 'dayjs/locale/ru'
 
-import { Button, Link, Stack, TextField, Typography } from '@mui/material'
+import {
+  Button,
+  FormControlLabel,
+  Link,
+  Stack,
+  Switch,
+  TextField,
+  Typography
+} from '@mui/material'
 import LoadingButton from '@mui/lab/LoadingButton'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
 
 import { useAppDispatch } from '../../redux/store'
+import { useSelector } from 'react-redux'
+import { tasksSelector } from '../../redux/tasks/selectors'
 import {
   getAllTasks,
   updateTask,
@@ -24,8 +34,6 @@ import {
   UploadTaskParams
 } from '../../redux/tasks/types'
 import { createTaskSchema, ITaskFields, PropsFormForTask } from './types'
-import { useSelector } from 'react-redux'
-import { tasksSelector } from '../../redux/tasks/selectors'
 
 /**
  * React функциональный компонент "Форма для создания/изменения задачи"
@@ -44,7 +52,7 @@ const FormTask: React.FC<PropsFormForTask> = props => {
 
   /** Состояние поля "Дата завершения" */
   /** Установка состояния по умолчанию в зависимости от активности модального окна */
-  const [date, setDate] = React.useState<Dayjs | null>(
+  const [date, setDate] = useState<Dayjs | null>(
     modalOpen // если модальное окно активно
       ? targetDate // и у выбранной задачи имеется дата завершения
         ? dayjs(targetDate, 'DD/MM/YYYY H:mm') // устанавливается дата завершения выбранной задачи
@@ -53,7 +61,12 @@ const FormTask: React.FC<PropsFormForTask> = props => {
   )
 
   /** Состояние прикрепленного файла */
-  const [fileUpload, setFileUpload] = React.useState<File | null>(null)
+  const [fileUpload, setFileUpload] = useState<File | null>(null)
+
+  /** Состояние свича для отображения поля с выбором даты завершения задачи */
+  const [switchDatePicker, setSwitchDatePicker] = useState<Boolean>(
+    targetDate ? true : false // переводит свич в активное положение, если у задачи есть дата завершения
+  )
 
   /** Инициализация хука useForm для работы с формой*/
   const {
@@ -85,11 +98,14 @@ const FormTask: React.FC<PropsFormForTask> = props => {
 
       /** При неактивном модальном окне – загрузка новой задачи  */
     } else {
-      dispatch(
+      await dispatch(
         uploadTask({
           // загрузка новой задачи
           ...data,
-          targetDate: date?.format('DD/MM/YYYY H:mm') || null,
+          targetDate:
+            switchDatePicker === true
+              ? date?.format('DD/MM/YYYY H:mm') || null
+              : null,
           file: fileUpload
         } as UploadTaskParams)
       )
@@ -133,13 +149,37 @@ const FormTask: React.FC<PropsFormForTask> = props => {
           )}
         />
 
+        {/* Свич для отображения поля с выбором даты завершения задачи */}
+        <FormControlLabel
+          control={
+            <Switch
+              defaultChecked={!!targetDate}
+              onChange={() => {
+                setSwitchDatePicker(!switchDatePicker)
+                if (!targetDate || modalOpen) {
+                  setDate(null)
+                }
+              }}
+            />
+          }
+          label='Установить дату завершения'
+        />
         {/* Поле с выбором даты завершения задачи */}
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'ru'}>
           <DateTimePicker
+            disabled={!!!switchDatePicker}
             label='Дата завершения'
             value={date}
-            onChange={e => setDate(e)}
-            renderInput={params => <TextField {...params} />}
+            onChange={event => setDate(event)}
+            renderInput={params => (
+              <TextField
+                {...params}
+                inputProps={{
+                  ...params.inputProps,
+                  placeholder: 'дд.мм.гггг чч:мм'
+                }}
+              />
+            )}
           />
         </LocalizationProvider>
 
@@ -171,7 +211,7 @@ const FormTask: React.FC<PropsFormForTask> = props => {
           </Stack>
         ) : (
           <Typography sx={{ mb: 1.5 }} color='text.secondary'>
-            Нет прикрепленного файла
+            Файл не выбран
           </Typography>
         )}
       </Stack>
