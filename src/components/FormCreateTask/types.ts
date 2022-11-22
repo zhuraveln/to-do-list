@@ -1,17 +1,5 @@
 import * as yup from 'yup'
 
-/** Типы props для FormTask */
-export type PropsFormForTask = {
-  id?: string
-  title?: string
-  description?: string
-  targetDate?: string
-  fileURL?: string
-  done?: boolean
-  modalOpen?: boolean
-  closeModal?: any
-}
-
 /** Типы полей для useForm */
 export interface ITaskFields {
   title: string
@@ -19,7 +7,7 @@ export interface ITaskFields {
 }
 
 /** Валидация полей для useForm */
-export const createTaskSchema = yup.object().shape({
+export const TaskSchema = yup.object().shape({
   title: yup
     .string()
     .required('это обязательное поле')

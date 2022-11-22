@@ -1,10 +1,10 @@
 import React from 'react'
 
 import NavBar from './components/NavBar'
-import FormForTask from './components/FormTask/FormTask'
 import TasksList from './components/TasksList'
 
 import styles from './App.module.less'
+import FormCreateTask from './components/FormCreateTask/FormCreateTask'
 
 /**
  * React функциональный компонент "Приложение TO DO LIST"
@@ -12,19 +12,19 @@ import styles from './App.module.less'
 const App: React.FC = () => {
   return (
     <>
-      {/* Навигационная панель */}
+      {/* Блок с навигационной панелью */}
       <div className={styles.navBar}>
         <NavBar />
       </div>
 
       {/* Обертка для формы и карточек задач */}
       <div className={styles.wrapper}>
-        {/* Форма для создания задач */}
+        {/* Блок формы для создания задачи */}
         <div className={styles.form}>
-          <FormForTask />
+          <FormCreateTask />
         </div>
 
-        {/* Карточки задач */}
+        {/* Блок с карточками задач */}
         <div className={styles.tasks}>
           <TasksList />
         </div>

@@ -7,10 +7,10 @@ import 'dayjs/locale/ru'
 
 import {
   Button,
+  Checkbox,
   FormControlLabel,
   Link,
   Stack,
-  Switch,
   TextField,
   Typography
 } from '@mui/material'
@@ -22,108 +22,77 @@ import AttachFileIcon from '@mui/icons-material/AttachFile'
 import { useAppDispatch } from '../../redux/store'
 import { useSelector } from 'react-redux'
 import { tasksSelector } from '../../redux/tasks/selectors'
-import {
-  getAllTasks,
-  updateTask,
-  uploadTask
-} from '../../redux/tasks/asyncActions'
+import { getAllTasks, updateTask } from '../../redux/tasks/asyncActions'
+import { clearSelectTask } from '../../redux/tasks/slice'
 
-import {
-  Status,
-  UpdateTaskParams,
-  UploadTaskParams
-} from '../../redux/tasks/types'
-import { createTaskSchema, ITaskFields, PropsFormForTask } from './types'
+import { Status, UpdateTaskParams } from '../../redux/tasks/types'
+import { PropsFormForTask } from './types'
+import { ITaskFields, TaskSchema } from '../FormCreateTask/types'
 
 /**
- * React функциональный компонент "Форма для создания/изменения задачи"
- * @params {props} объект типа PropsFormForTask
+ * React функциональный компонент "Форма для изменения задачи"
  */
 const FormTask: React.FC<PropsFormForTask> = props => {
-  /** Деструктуризация полученных данных из props */
-  const { id, title, description, targetDate, fileURL, modalOpen, closeModal } =
-    props
+  // Деструктуризация полученных данных из props
+  const { id, title, description, targetDate, fileURL } = props
 
-  /** Получение статуса задачи из Redux */
+  // Получение статуса задачи из Redux state
   const { tasksStatus } = useSelector(tasksSelector)
 
-  /** Инициализация dispatch для работы с Redux */
+  /** dispatch для работы с actions Redux */
   const dispatch = useAppDispatch()
 
-  /** Состояние поля "Дата завершения" */
-  /** Установка состояния по умолчанию в зависимости от активности модального окна */
+  //Состояние поля "Дата завершения"
   const [date, setDate] = useState<Dayjs | null>(
-    modalOpen // если модальное окно активно
-      ? targetDate // и у выбранной задачи имеется дата завершения
-        ? dayjs(targetDate, 'DD/MM/YYYY H:mm') // устанавливается дата завершения выбранной задачи
-        : null // поле чисто при отсутствии даты завершения у выбранной задачи
-      : null // поле чисто при неактивном модальном окне
+    targetDate // если у выбранной задачи имеется дата завершения
+      ? dayjs(targetDate, 'DD.MM.YYYY H:mm') // устанавливается дата завершения выбранной задачи
+      : null // поле чистое при отсутствии даты завершения у выбранной задачи
   )
 
-  /** Состояние прикрепленного файла */
+  // Состояние прикрепленного файла
   const [fileUpload, setFileUpload] = useState<File | null>(null)
 
-  /** Состояние свича для отображения поля с выбором даты завершения задачи */
+  // Состояние checkbox для отображения поля с выбором даты завершения задачи
   const [switchDatePicker, setSwitchDatePicker] = useState<Boolean>(
-    targetDate ? true : false // переводит свич в активное положение, если у задачи есть дата завершения
+    targetDate ? true : false // переводит checkbox в активное положение, если у задачи есть дата завершения
   )
 
-  /** Инициализация хука useForm для работы с формой*/
+  // Хук useForm для работы с формой
   const {
     control,
     handleSubmit,
-    formState: { errors },
-    reset
+    formState: { errors }
   } = useForm<ITaskFields>({
     mode: 'onChange',
-    resolver: yupResolver(createTaskSchema)
+    resolver: yupResolver(TaskSchema)
   })
 
-  /** Обработчик события "onSubmit" для формы создания/обновления задачи */
+  /** Обработчик события "onSubmit" для формы обновления задачи */
   const onSubmit: SubmitHandler<ITaskFields> = async data => {
-    /** При активном модальном окне – обновление полей выбранной задачи */
-    if (modalOpen) {
-      await dispatch(
-        updateTask({
-          // обновление задачи
-          ...data,
-          id,
-          targetDate: date?.format('DD/MM/YYYY H:mm') || null,
-          fileURL,
-          file: fileUpload
-        } as UpdateTaskParams)
-      )
-      dispatch(getAllTasks()) // получение всех задач после обновления полей задачи
-      closeModal() // закрытие модального окна
+    // обновление полей задачи
+    await dispatch(
+      updateTask({
+        ...data,
+        id,
+        targetDate: date?.format('DD.MM.YYYY H:mm') || null,
+        fileURL,
+        file: fileUpload
+      } as UpdateTaskParams)
+    )
 
-      /** При неактивном модальном окне – загрузка новой задачи  */
-    } else {
-      await dispatch(
-        uploadTask({
-          // загрузка новой задачи
-          ...data,
-          targetDate:
-            switchDatePicker === true
-              ? date?.format('DD/MM/YYYY H:mm') || null
-              : null,
-          file: fileUpload
-        } as UploadTaskParams)
-      )
-      reset() // отчистка полей формы
-      setFileUpload(null) // отчистка состояния загружаемого файла
-      setDate(null) // отчистка состояния выб
-    }
+    dispatch(clearSelectTask()) // удаление выбранной задачи в Redux
+    dispatch(getAllTasks()) // получение всех задач после обновления полей задачи
   }
 
   return (
-    // Форма для создания/обновления задачи
+    // Форма для обновления задачи
     <form onSubmit={handleSubmit(onSubmit)}>
       <Stack spacing={1} mb={4}>
         {/* Поле с заголовком задачи */}
         <Controller
           name='title'
           control={control}
-          defaultValue={title ? title : ''}
+          defaultValue={title}
           render={({ field }) => (
             <TextField
               {...field}
@@ -138,7 +107,7 @@ const FormTask: React.FC<PropsFormForTask> = props => {
         <Controller
           name='description'
           control={control}
-          defaultValue={description ? description : ''}
+          defaultValue={description}
           render={({ field }) => (
             <TextField
               {...field}
@@ -149,21 +118,21 @@ const FormTask: React.FC<PropsFormForTask> = props => {
           )}
         />
 
-        {/* Свич для отображения поля с выбором даты завершения задачи */}
+        {/* Checkbox для активации поля даты выполнения задачи */}
         <FormControlLabel
           control={
-            <Switch
-              defaultChecked={!!targetDate}
-              onChange={() => {
+            <Checkbox
+              checked={!!switchDatePicker}
+              {...{ inputProps: { 'aria-label': 'Checkbox demo' } }}
+              onClick={() => {
                 setSwitchDatePicker(!switchDatePicker)
-                if (!targetDate || modalOpen) {
-                  setDate(null)
-                }
+                setDate(null)
               }}
             />
           }
           label='Установить дату завершения'
         />
+
         {/* Поле с выбором даты завершения задачи */}
         <LocalizationProvider dateAdapter={AdapterDayjs} adapterLocale={'ru'}>
           <DateTimePicker
@@ -195,11 +164,15 @@ const FormTask: React.FC<PropsFormForTask> = props => {
             }
           />
         </Button>
+
         {/* Информация о загружаемом файле */}
         {fileUpload ? (
-          <Typography sx={{ mb: 1.5 }} color='text.secondary'>
-            <b>Файл для загрузки:</b> {fileUpload.name}
-          </Typography>
+          <Stack direction='row' spacing={0.3}>
+            <AttachFileIcon />
+            <Typography sx={{ mb: 1.5 }} color='text.secondary'>
+              <b>Файл для загрузки:</b> {fileUpload.name}
+            </Typography>
+          </Stack>
         ) : fileURL ? (
           <Stack direction='row' spacing={0.3}>
             <AttachFileIcon />

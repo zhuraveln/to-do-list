@@ -44,7 +44,7 @@ export default class TasksAPI {
    */
   static async fetchUploadTask(data: UploadTaskParams) {
     /** Деструктуризация полученных данных из параметра */
-    const { title, description, targetDate } = data
+    const { title, description, targetDate, fileURL } = data
 
     /** Создание ссылки на коллекцию 'tasks' */
     const tasksCollectionRef = collection(db, 'tasks')
@@ -54,6 +54,7 @@ export default class TasksAPI {
       title,
       description,
       targetDate,
+      fileURL,
       done: false
     })
 

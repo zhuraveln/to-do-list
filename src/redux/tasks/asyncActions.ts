@@ -31,14 +31,16 @@ export const uploadTask = createAsyncThunk(
   async (params: UploadTaskParams) => {
     const { title, description, targetDate, file } = params
 
+    const dataFile = await FileAPI.fetchUploadFile({ file })
+
     const dataTask = await TasksAPI.fetchUploadTask({
       title,
       description,
-      targetDate
+      targetDate,
+      fileURL: dataFile
     })
-    const dataFile = await FileAPI.fetchUploadFile({ file })
 
-    return { ...dataTask, fileURL: dataFile } as TaskItem
+    return dataTask as TaskItem
   }
 )
 

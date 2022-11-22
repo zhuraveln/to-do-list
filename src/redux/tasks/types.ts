@@ -27,6 +27,7 @@ export type UploadTaskParams = {
   title: string
   description: string
   targetDate: string | null
+  fileURL: string | null
   file?: File | null
 }
 

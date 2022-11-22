@@ -21,7 +21,6 @@ import { TaskItem } from '../redux/tasks/types'
 
 /**
  * React функциональный компонент "Карточка задачи"
- * @params {props} объект типа TaskItem
  */
 const TaskCard: React.FC<TaskItem> = props => {
   /** Деструктуризация полученных данных из props */
@@ -30,7 +29,7 @@ const TaskCard: React.FC<TaskItem> = props => {
   /** Инициализация dispatch для работы с Redux */
   const dispatch = useAppDispatch()
 
-  /** Функция обработчик события клика на <Checkbox/> */
+  /** Функция обработчик события клика на Checkbox завершения задачи */
   const onClickDone = () => {
     dispatch(doneTask({ id, done }))
   }
@@ -54,7 +53,7 @@ const TaskCard: React.FC<TaskItem> = props => {
     <Card
       sx={{
         marginBottom: '10px',
-        background: `${done ? '#ddffdd' : timeIsOver ? '#ffb3b3' : '#fffabb'}`
+        background: `${done ? '#ddffdd' : timeIsOver ? '#ffb3b3' : '#fffabb'}` // Цвет фона карточки в зависимости от активности задачи и времени "просроченности"
       }}
     >
       <CardContent>
