@@ -147,6 +147,7 @@ const FormTask: React.FC<PropsFormForTask> = props => {
             renderInput={params => (
               <TextField
                 {...params}
+                required={!!switchDatePicker}
                 inputProps={{
                   ...params.inputProps,
                   placeholder: 'дд.мм.гггг чч:мм'

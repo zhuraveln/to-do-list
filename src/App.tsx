@@ -17,7 +17,7 @@ const App: React.FC = () => {
         <NavBar />
       </div>
 
-      {/* Обертка для формы и карточек задач */}
+      {/* Обертка для формы создания задачи и карточек задач */}
       <div className={styles.wrapper}>
         {/* Блок формы для создания задачи */}
         <div className={styles.form}>
