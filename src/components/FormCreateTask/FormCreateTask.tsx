@@ -17,6 +17,7 @@ import LoadingButton from '@mui/lab/LoadingButton'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
+import DeleteIcon from '@mui/icons-material/Delete'
 
 import { useAppDispatch } from '../../redux/store'
 import { useSelector } from 'react-redux'
@@ -161,14 +162,17 @@ const FormCreateTask: React.FC = () => {
         {fileUpload ? (
           <Stack direction='row' spacing={0.3}>
             <AttachFileIcon />
-            <Typography sx={{ mb: 1.5 }} color='text.secondary'>
+            <Typography color='text.secondary'>
               <b>Файл для загрузки:</b> {fileUpload.name}
             </Typography>
+            <DeleteIcon
+              color='error'
+              cursor='pointer'
+              onClick={() => setFileUpload(null)}
+            />
           </Stack>
         ) : (
-          <Typography sx={{ mb: 1.5 }} color='text.secondary'>
-            Файл не выбран
-          </Typography>
+          <Typography color='text.secondary'>Файл не выбран</Typography>
         )}
       </Stack>
 

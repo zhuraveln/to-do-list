@@ -9,7 +9,6 @@ import { useAppDispatch } from '../redux/store'
 import { getAllTasks } from '../redux/tasks/asyncActions'
 import { tasksSelector } from '../redux/tasks/selectors'
 import { clearSelectTask } from '../redux/tasks/slice'
-import { Status } from '../redux/tasks/types'
 import { Typography } from '@mui/material'
 
 /**

@@ -18,6 +18,7 @@ import LoadingButton from '@mui/lab/LoadingButton'
 import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs'
 import { DateTimePicker, LocalizationProvider } from '@mui/x-date-pickers'
 import AttachFileIcon from '@mui/icons-material/AttachFile'
+import DeleteIcon from '@mui/icons-material/Delete'
 
 import { useAppDispatch } from '../../redux/store'
 import { useSelector } from 'react-redux'
@@ -42,6 +43,11 @@ const FormTask: React.FC<PropsFormForTask> = props => {
   /** dispatch для работы с actions Redux */
   const dispatch = useAppDispatch()
 
+  // Состояние checkbox для отображения поля с выбором даты завершения задачи
+  const [switchDatePicker, setSwitchDatePicker] = useState<Boolean>(
+    targetDate ? true : false // переводит checkbox в активное положение, если у задачи есть дата завершения
+  )
+
   //Состояние поля "Дата завершения"
   const [date, setDate] = useState<Dayjs | null>(
     targetDate // если у выбранной задачи имеется дата завершения
@@ -52,10 +58,8 @@ const FormTask: React.FC<PropsFormForTask> = props => {
   // Состояние прикрепленного файла
   const [fileUpload, setFileUpload] = useState<File | null>(null)
 
-  // Состояние checkbox для отображения поля с выбором даты завершения задачи
-  const [switchDatePicker, setSwitchDatePicker] = useState<Boolean>(
-    targetDate ? true : false // переводит checkbox в активное положение, если у задачи есть дата завершения
-  )
+  // Состояние ссылки на прикрепленный файл задачи
+  const [taskFileURL, setTaskFileURL] = useState<string | null>(fileURL)
 
   // Хук useForm для работы с формой
   const {
@@ -75,7 +79,7 @@ const FormTask: React.FC<PropsFormForTask> = props => {
         ...data,
         id,
         targetDate: date?.format('DD.MM.YYYY H:mm') || null,
-        fileURL,
+        fileURL: taskFileURL,
         file: fileUpload
       } as UpdateTaskParams)
     )
@@ -165,22 +169,34 @@ const FormTask: React.FC<PropsFormForTask> = props => {
           />
         </Button>
 
-        {/* Информация о загружаемом файле */}
+        {/* Информация о файле */}
         {fileUpload ? (
+          // Информация о загружаемом файле к задачи
           <Stack direction='row' spacing={0.3}>
             <AttachFileIcon />
-            <Typography sx={{ mb: 1.5 }} color='text.secondary'>
+            <Typography color='text.secondary'>
               <b>Файл для загрузки:</b> {fileUpload.name}
             </Typography>
+            <DeleteIcon
+              color='error'
+              cursor='pointer'
+              onClick={() => setFileUpload(null)}
+            />
           </Stack>
-        ) : fileURL ? (
+        ) : // Информация о прикрепленном файле к задачи
+        taskFileURL ? (
           <Stack direction='row' spacing={0.3}>
             <AttachFileIcon />
             <Typography variant='body1'>
-              <Link href={fileURL} target='_blank'>
+              <Link href={taskFileURL} target='_blank'>
                 <b>Прикрепленный файл</b>
               </Link>
             </Typography>
+            <DeleteIcon
+              color='error'
+              cursor='pointer'
+              onClick={() => setTaskFileURL(null)}
+            />
           </Stack>
         ) : (
           <Typography sx={{ mb: 1.5 }} color='text.secondary'>
@@ -189,7 +205,7 @@ const FormTask: React.FC<PropsFormForTask> = props => {
         )}
       </Stack>
 
-      {/* Кнопка для загрузки/обновления задачи */}
+      {/* Кнопка для обновления задачи */}
       <Stack>
         <LoadingButton
           type='submit'
