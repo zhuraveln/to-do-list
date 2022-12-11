@@ -2,9 +2,9 @@ import React from 'react'
 
 import NavBar from './components/NavBar'
 import TasksList from './components/TasksList'
+import FormCreateTask from './components/FormCreateTask/FormCreateTask'
 
 import styles from './App.module.less'
-import FormCreateTask from './components/FormCreateTask/FormCreateTask'
 
 /**
  * React функциональный компонент "Приложение TO DO LIST"

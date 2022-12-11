@@ -42,7 +42,9 @@ const TaskCard: React.FC<TaskItem> = props => {
 
   /** Функция обработчик события клика на кнопку Удалить */
   const onClickDelete = () => {
-    dispatch(deleteTask(id))
+    if (window.confirm('Вы точно хотите удалить задачу?')) {
+      dispatch(deleteTask(id))
+    }
   }
 
   /** Определение "просроченности" выполнения задачи */

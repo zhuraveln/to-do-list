@@ -5,14 +5,13 @@ import { getStorage } from 'firebase/storage'
 /** Конфигурация для доступа к Firebase */
 const firebaseConfig = {
   apiKey: `${process.env.REACT_APP_FIREBASE_API_KEY}`,
-  authDomain: 'to-do-list-1ff69.firebaseapp.com',
-  databaseURL:
-    'https://to-do-list-1ff69-default-rtdb.europe-west1.firebasedatabase.app',
-  projectId: 'to-do-list-1ff69',
-  storageBucket: 'to-do-list-1ff69.appspot.com',
-  messagingSenderId: '714801661070',
-  appId: '1:714801661070:web:fab6a420ff9ebdd95db5df',
-  measurementId: 'G-DFLYE8SZND'
+  authDomain: `${process.env.REACT_APP_AUTHDOMAIN}`,
+  databaseURL: `${process.env.REACT_APP_DATABASEURL}`,
+  projectId: `${process.env.REACT_APP_PROJECTID}`,
+  storageBucket: `${process.env.REACT_APP_STORAGEBUCKET}`,
+  messagingSenderId: `${process.env.REACT_APP_MESSAGINGSENDERID}`,
+  appId: `${process.env.REACT_APP_APPID}`,
+  measurementId: `${process.env.REACT_APP_MEASUREMENTID}`
 }
 
 /** Приложение Firebase */
