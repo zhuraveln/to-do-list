@@ -2,12 +2,6 @@
 
 SPA by 💙 **React JS**
 
-## 👀 Demo
-
-- **[to-do-list](https://to-do-list.vercel.app/)** (vercel)
-  ![main-page](/src/assets/Demo-1.png)
-  ![update-task-modal](/src/assets/Demo-2.png)
-
 ## 🛠 Tech Stack
 
 - Typescript
@@ -20,3 +14,10 @@ SPA by 💙 **React JS**
 ## 🗃 Backend
 
 - Firebase (Firestore, Storage)
+
+## 👀 Demo
+
+- deployed project - **[to-do-list](https://to-do-list.vercel.app/)**
+
+- ![main-page](/src/assets/Demo-1.png)
+  ![update-task-modal](/src/assets/Demo-2.png)
