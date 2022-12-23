@@ -1,15 +1,21 @@
 # 📒 TO DO List
 
-SPA by 💙 **React JS**
+SPA by 💙 **React**
 
 ## 🛠 Tech Stack
 
 - Typescript
-- React / React Hook Form
+- React
 - Redux toolkit
 - UI Kit MUI
-- LESS / CSS Modules
-- Utils – dayjs, uuid, yup
+- LESS / LESS Modules
+- Libraries – React Hook Form, yup, dayjs, uuid
+
+## ⚡️ Features
+
+- Color display the Task card if it is not completed on time
+- Ability to attach files (and store them in the cloud)
+- Adaptive layout for all devices
 
 ## 🗃 Backend
 
@@ -19,5 +25,5 @@ SPA by 💙 **React JS**
 
 - deployed project - **[to-do-list](https://to-do-list-one-umber-65.vercel.app/)**
 
-- ![main-page](/src/assets/Demo-1.png)
+  ![main-page](/src/assets/Demo-1.png)
   ![update-task-modal](/src/assets/Demo-2.png)

@@ -6,7 +6,10 @@ import {
   getDocs,
   getDoc,
   updateDoc,
-  deleteDoc
+  deleteDoc,
+  serverTimestamp,
+  orderBy,
+  query
 } from 'firebase/firestore'
 
 import {
@@ -29,7 +32,9 @@ export default class TasksAPI {
     const tasksCollectionRef = collection(db, 'tasks')
 
     /** Получение коллекции задач по заданной ссылке */
-    const response = await getDocs(tasksCollectionRef)
+    const response = await getDocs(
+      query(tasksCollectionRef, orderBy('timestamp', 'asc'))
+    )
 
     /** Распаковка полученных данных в массив */
     const data = response.docs.map(doc => ({ ...doc.data(), id: doc.id }))
@@ -55,7 +60,8 @@ export default class TasksAPI {
       description,
       targetDate,
       fileURL,
-      done: false
+      done: false,
+      timestamp: serverTimestamp()
     })
 
     /** Создание ссылки на созданную задачу в коллекции 'tasks' */
